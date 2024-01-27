@@ -1,0 +1,40 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: black !important;
+}
+
+.swap-currency-form {
+  position: relative;
+  z-index: 1;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  transition: transform 250ms ease 0s;
+  border-radius: 24px;
+
+  &::before {
+    content: " ";
+    display: flex;
+    position: absolute;
+    inset: 0px;
+    transform: scale(1.4);
+    filter: blur(50px);
+    background-color: rgba(252, 114, 255, 0.075);
+    z-index: -2;
+  }
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}

@@ -1,0 +1,8 @@
+# List out the computational inefficiencies and anti-patterns found in the code block below.
+- The interface `WalletBalance` is missing property `blockchain`
+- Putting function logic directly into useEffect. This way will make our code look messy and hard to control the logic. The easy way to fix it is move it individual function
+- All the functions and variables are not wrapped inside useCallback and useMemo. These functions will have to memorize our function and variable which can help us memorize and avoid re-render unnecessary
+- In logic variable `sortedBalances` use a variable `lhsPriority` which not defined yet. I think we can use `balancePriority` instead of
+- In logic variable `sortedBalances`, in dependency is missing `prices` and `getPriority`. This think can cause an issue that when these values is update with new value, inside the logic will not update directly and still using previous value. To fix it just need to put them inside the dependency
+- In functions render rows, it's using index as a key of component which not hightly recommend cause using index as a key will cause an issue that the index will not change when the order of items are changed. This can negatively impact performance and may cause issues with component state
+- In the logic `sortedBalances` might contain many different logic which not recommend. In my suggestion, we need to separate as much as possible the logic in different logic and use it, not put many logic insde 1
