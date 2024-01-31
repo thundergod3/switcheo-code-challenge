@@ -24,7 +24,13 @@ class Datasource {
       const response = await fetch(this.endpoint);
       const data = await response.json();
 
-      return data;
+      const prices = {};
+
+      data?.forEach((record: any) => {
+        prices[record?.currency] = record?.price;
+      });
+
+      return prices;
     } catch (error) {
       return error;
     }
@@ -52,10 +58,6 @@ const WalletPage: React.FC<Props> = (props: Props) => {
       });
   }, []);
 
-  useEffect(() => {
-    handleGetDataSources();
-  }, []);
-
   const getPriority = useCallback((blockchain: any): number => {
     switch (blockchain) {
       case "Osmosis":
@@ -77,10 +79,8 @@ const WalletPage: React.FC<Props> = (props: Props) => {
     (balance: WalletBalance) => {
       const balancePriority = getPriority(balance.blockchain);
 
-      if (balancePriority > -99) {
-        if (balance.amount <= 0) {
-          return true;
-        }
+      if (balancePriority > -99 && balance.amount <= 0) {
+        return true;
       }
 
       return false;
@@ -92,11 +92,12 @@ const WalletPage: React.FC<Props> = (props: Props) => {
     (lhs: WalletBalance, rhs: WalletBalance) => {
       const leftPriority = getPriority(lhs.blockchain);
       const rightPriority = getPriority(rhs.blockchain);
+
       if (leftPriority > rightPriority) {
         return -1;
-      } else if (rightPriority > leftPriority) {
-        return 1;
       }
+
+      return 1;
     },
     [getPriority]
   );
@@ -105,31 +106,27 @@ const WalletPage: React.FC<Props> = (props: Props) => {
     return balances.filter(checkBalancePriority).sort(sortPriority);
   }, [checkBalancePriority, sortPriority]);
 
-  const formattedBalances = useMemo(
-    () =>
-      sortedBalances.map((balance: WalletBalance) => {
-        return {
-          ...balance,
-          formatted: balance.amount.toFixed(),
-        };
-      }),
-    [sortedBalances]
-  );
+  const rows = useCallback(() => {
+    return sortedBalances.map(
+      (balance: FormattedWalletBalance, index: number) => {
+        const usdValue = prices[balance.currency] * balance.amount;
 
-  const rows = sortedBalances.map(
-    (balance: FormattedWalletBalance, index: number) => {
-      const usdValue = prices[balance.currency] * balance.amount;
-      return (
-        <WalletRow
-          className={classes.row}
-          key={index}
-          amount={balance.amount}
-          usdValue={usdValue}
-          formattedAmount={balance.formatted}
-        />
-      );
-    }
-  );
+        return (
+          <WalletRow
+            className={classes.row}
+            key={`row-${index}`}
+            amount={balance.amount}
+            usdValue={usdValue}
+            formattedAmount={balance.formatted}
+          />
+        );
+      }
+    );
+  }, [prices]);
+
+  useEffect(() => {
+    handleGetDataSources();
+  }, []);
 
   return <div {...rest}>{rows}</div>;
 };

@@ -38,7 +38,7 @@ const SwapCurrencyInput: FC<IProps> = ({
       <Flex justify="between" align="center">
         <Flex direction="column" className="gap-2">
           <input
-            key={`${value}-${type}`}
+            key={type}
             className="border-none outline-none focus:outline-none text-4xl font-medium text-white max-h-[44px] bg-transparent rounded-2xl"
             placeholder="0"
             type="number"
@@ -60,11 +60,13 @@ const SwapCurrencyInput: FC<IProps> = ({
           />
         </Flex>
       </Flex>
-      <Flex align="center" className="min-h-6">
-        <Text className="text-primary-grey text-xs">
-          {formatter.format(dollarValue)}
-        </Text>
-      </Flex>
+      {rest?.tokenImage && (
+        <Flex align="center" className="min-h-6">
+          <Text className="text-primary-grey text-xs">
+            {formatter.format(dollarValue)}
+          </Text>
+        </Flex>
+      )}
     </Flex>
   );
 };

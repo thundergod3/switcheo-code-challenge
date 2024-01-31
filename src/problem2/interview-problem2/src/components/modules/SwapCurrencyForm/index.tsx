@@ -2,13 +2,14 @@ import { Icon } from "@iconify/react";
 import { Button, Flex } from "@radix-ui/themes";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import cx from "classnames";
+import { toast } from "react-toastify";
 
-import dummyData from "src/dummy/data.json";
+import calculateCurrency from "src/utils/calculateCurrency";
 
 import SwapCurrencyInput from "src/components/astom/SwapCurrencyInput";
 import SelectTokenModal from "../SelectTokenModal";
-import calculateCurrency from "src/utils/calculateCurrency";
-import { toast } from "react-toastify";
+import ConfirmDialog from "src/components/astom/ConfirmDialog";
+import formatSymbol from "src/utils/formatSymbol";
 
 const SwapCurrencyForm = () => {
   const [openSelectTokenModal, setOpenSelectTokenModal] = useState(false);
@@ -17,9 +18,10 @@ const SwapCurrencyForm = () => {
   const [currentSymbol, setCurrentSymbol] = useState("");
   const [currentType, setCurrentType] = useState("");
   const [isError, setIsError] = useState(false);
-
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [inData, setInData] = useState<ICurrencyData>({});
   const [outData, setOutData] = useState<ICurrencyData>({});
+  const [isTriggerResetKey, setIsTriggerResetKey] = useState(false);
 
   const isDisabled = useMemo(
     () => !inData?.value || !outData?.value,
@@ -42,7 +44,7 @@ const SwapCurrencyForm = () => {
       return {
         isToken: !!findToken,
         text: findToken?.symbol || "Select token",
-        tokenImage: findToken?.logoURI,
+        tokenImage: findToken?.logo,
         dollarValue: findToken?.price,
       };
     },
@@ -149,6 +151,16 @@ const SwapCurrencyForm = () => {
       return;
     }
 
+    setOpenConfirmDialog(true);
+  }, [isDisabled]);
+
+  const triggerResetFormWithKey = useCallback(() => {
+    setIsTriggerResetKey(true);
+
+    setTimeout(() => setIsTriggerResetKey(false), 1);
+  }, []);
+
+  const handleConfirmSwapCurrency = useCallback(() => {
     setInData({
       symbol: tokensData?.[0]?.symbol,
     });
@@ -156,7 +168,12 @@ const SwapCurrencyForm = () => {
     toast.success(
       `You have from token ${inData?.symbol} to ${outData?.symbol}`
     );
-  }, [inData?.symbol, isDisabled, outData?.symbol, tokensData]);
+    triggerResetFormWithKey();
+  }, [inData?.symbol, outData?.symbol, tokensData, triggerResetFormWithKey]);
+
+  const handleCancel = useCallback(() => {
+    setOpenConfirmDialog(false);
+  }, []);
 
   const handleGetTokensPrice = useCallback(async () => {
     try {
@@ -165,24 +182,22 @@ const SwapCurrencyForm = () => {
       );
       const data = await response.json();
 
-      const formatData = dummyData?.tokens
-        ?.filter((record) => {
-          const findToken = data?.find(
-            (token: any) => token?.currency === record?.symbol
-          );
+      const formatData: ITokenItem[] = [];
 
-          return findToken?.price > 0;
-        })
-        .map((record) => {
-          const findToken = data?.find(
-            (token: any) => token?.currency === record?.symbol
-          );
+      data?.forEach((record: any) => {
+        const findData = formatData?.find(
+          (token: any) => token?.symbol === record?.currency
+        );
+        const symbol = formatSymbol(record?.currency);
 
-          return {
-            ...record,
-            price: findToken?.price,
-          };
-        }) as ITokenItem[];
+        if (!findData) {
+          formatData.push({
+            symbol: symbol,
+            price: record?.price,
+            logo: `https://raw.githubusercontent.com/Switcheo/token-icons/main/tokens/${symbol}.svg`,
+          });
+        }
+      });
 
       setTokensData(formatData);
       setInData({
@@ -222,6 +237,7 @@ const SwapCurrencyForm = () => {
               onValueChange={handleCurrencyChange}
               isError={isError}
               currencyErrorMessage="You must input the value you want to pay"
+              key={`${isTriggerResetKey}-in`}
             />
             <Flex
               justify="center"
@@ -240,6 +256,7 @@ const SwapCurrencyForm = () => {
               isError={isError}
               currencyErrorMessage="You must input the value you want to receive"
               tokenErrorMessage="You must select a token"
+              key={`${isTriggerResetKey}-out`}
             />
             <Button
               className={cx("!bg-primary-pink !h-14 !rounded-2xl !text-white", {
@@ -262,6 +279,14 @@ const SwapCurrencyForm = () => {
         onSearchChange={setKeyword}
         value={currentSymbol}
         onSelectToken={handleSelectToken}
+      />
+      <ConfirmDialog
+        open={openConfirmDialog}
+        onOpenChange={setOpenConfirmDialog}
+        onCancel={handleCancel}
+        onConfirm={handleConfirmSwapCurrency}
+        title={`Confirm swap from token ${inData?.symbol} to ${outData?.symbol}`}
+        content="Are you confirming to swap this token?"
       />
     </>
   );

@@ -20,6 +20,7 @@ const SearchInput: FC<ISearchInputProps> = ({
         clearTimeout(timeout);
       };
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedText]);
 
   return (

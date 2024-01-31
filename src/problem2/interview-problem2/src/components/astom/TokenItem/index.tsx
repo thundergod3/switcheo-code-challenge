@@ -5,16 +5,15 @@ type IProps = ITokenItem & {
   onSelectToken?: (data: string) => void;
 };
 
-const TokenItem: FC<IProps> = ({ logoURI, name, symbol, onSelectToken }) => {
+const TokenItem: FC<IProps> = ({ logo, symbol, onSelectToken }) => {
   return (
     <Flex
       align="center"
-      className="gap-4 px-5 py-1 cursor-pointer hover:bg-secondary-softGrey"
+      className="gap-4 px-5 py-2 cursor-pointer hover:bg-secondary-softGrey"
       onClick={() => onSelectToken?.(symbol)}>
-      <img src={logoURI} alt={name} className="w-9 h-9 rounded-full" />
+      <img src={logo} alt={symbol} className="w-9 h-9 rounded-full" />
       <Flex direction="column" className="gap-1">
-        <Text className="text-white">{name}</Text>
-        <Text className="text-xs text-primary-grey">{symbol}</Text>
+        <Text className="text-white">{symbol}</Text>
       </Flex>
     </Flex>
   );

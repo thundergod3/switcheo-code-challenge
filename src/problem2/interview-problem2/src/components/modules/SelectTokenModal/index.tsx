@@ -56,7 +56,7 @@ const SelectTokenModal: FC<IProps> = ({
                   <Fragment key={`${record?.symbol}-${index}`}>
                     <SwapButton
                       text={record?.symbol}
-                      tokenImage={record?.logoURI}
+                      tokenImage={record?.logo}
                       isArrow={false}
                       isToken
                       onSelectToken={onSelectToken}
@@ -74,14 +74,10 @@ const SelectTokenModal: FC<IProps> = ({
               <ScrollArea className="max-h-[452px]">
                 {tokensData
                   ?.slice(4, tokensData?.length - 1)
-                  ?.filter(
-                    (record) =>
-                      record?.name
-                        ?.toLocaleLowerCase()
-                        ?.includes(lowercaseKeyword) ||
-                      record?.symbol
-                        ?.toLocaleLowerCase()
-                        ?.includes(lowercaseKeyword)
+                  ?.filter((record) =>
+                    record?.symbol
+                      ?.toLocaleLowerCase()
+                      ?.includes(lowercaseKeyword)
                   )
                   ?.map((record, index) => (
                     <Fragment key={`${record?.symbol}-${index}`}>

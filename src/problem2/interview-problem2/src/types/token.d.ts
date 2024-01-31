@@ -1,7 +1,6 @@
 type ITokenItem = {
-  name: string;
   symbol: string;
-  logoURI: string;
+  logo: string;
   price?: number;
 };
 
