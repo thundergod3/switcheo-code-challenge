@@ -74,7 +74,7 @@ export const WalletPage: React.FC<Props> = (props: Props) => {
           />
         );
       }),
-    []
+    [formattedBalances]
   );
 
   useEffect(() => {
