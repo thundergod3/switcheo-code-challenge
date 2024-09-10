@@ -1,20 +1,23 @@
-import { Blockchain } from "./commons";
+export type Blockchain =
+  | "Osmosis"
+  | "Ethereum"
+  | "Arbitrum"
+  | "Zilliqa"
+  | "Neo";
 
-// FIXME: Bring this function away from WalletPage
-// FIXME: Change any type
-export const getPriority = (blockchain?: Blockchain): number => {
-  switch (blockchain) {
-    case "Osmosis":
-      return 100;
-    case "Ethereum":
-      return 50;
-    case "Arbitrum":
-      return 30;
-    case "Zilliqa":
-      return 20;
-    case "Neo":
-      return 20;
-    default:
-      return -99;
-  }
-};
+export interface BaseCurrency {
+  currency: string;
+  date: string;
+  price: number;
+}
+
+export interface WalletBalance {
+  currency: string;
+  amount: number;
+  blockchain?: Blockchain; // FIXME: Add blockchain type
+}
+export interface FormattedWalletBalance {
+  currency: string;
+  amount: number;
+  formatted: string;
+}

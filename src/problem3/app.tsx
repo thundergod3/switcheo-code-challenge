@@ -1,6 +1,6 @@
 import classes from "./styles.scss";
-import { BaseCurrency, WalletBalance, FormattedWalletBalance } from "./commons";
-import { getPriority } from "./types";
+import { BaseCurrency, WalletBalance, FormattedWalletBalance } from "./types";
+import { getPriority } from "./commons";
 
 // FIXME: Add data source
 class Datasource {
