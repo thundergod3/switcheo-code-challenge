@@ -214,6 +214,10 @@ const SwapCurrencyForm = () => {
 
   const handleCurrencyChange = useCallback(
     (value: number, type: string) => {
+      if (Number(value) < 0 || Number.isNaN(value)) {
+        return;
+      }
+
       setIsError(false);
 
       const [formatInData, formatOutData] = formatInAndOutData(
@@ -308,7 +312,7 @@ const SwapCurrencyForm = () => {
     );
 
     toast.promise(resolveAfter3Sec, {
-      pending: "Wallet connect is processing ( Simulate ",
+      pending: "Wallet connect is processing ( Simulate )",
       success: "Wallet connect success",
       error: "Wallet connect failed",
     });
